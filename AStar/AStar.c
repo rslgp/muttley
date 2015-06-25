@@ -157,9 +157,13 @@ void setNoAcumulado(int key, int value){
 	mapa[key/token][key%token].acumulado=value;
 }
 
-int verifyPontos(int a, int b){ //euclides quadratico, distancia de dois pontos
+int ES(int a, int b){
 	int startX= a/100, endX= b/100, startY=a%100, endY=b%100;
-	return abs((float) sqrt(pow(startX - endX, 2) + pow(startY - endY, 2)))==1;
+	return (float) sqrt(pow(startX - endX, 2) + pow(startY - endY, 2));
+}
+
+int verifyPontos(int a, int b){ //euclides quadratico, distancia de dois pontos
+	return abs(ES(a,b))==1;
 }
 
 no *openlist=NULL,*closedlist=NULL, *listaCaminho=NULL;	//tudo fifo queue
@@ -292,4 +296,7 @@ int main(){
 	printf("%s%d\n", "saindo daqui ",mapa[i][j].key);
 	printf("%s%d\n", "quero chegar aqui ",mapa[x][y].key);
 	AStar(mapa[i][j].key,mapa[x][y].key);
+
+	printf("distancia entre pontos %d\n", verifyPontos(0203,0004));
+
 }
