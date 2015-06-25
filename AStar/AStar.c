@@ -37,7 +37,7 @@ void atualizar(int key, int opcao){
 			mapa[(key/token)][(key%token)].onOpenList= !mapa[(key/token)][(key%token)].onOpenList;
 		break;
 		case 2:
-			mapa[(key/token)][(key%token)].onClosedList= !mapa[(key/token)][(key%token)].onOpenList;
+			mapa[(key/token)][(key%token)].onClosedList= !mapa[(key/token)][(key%token)].onClosedList;
 		break;
 
 	}
@@ -127,8 +127,8 @@ int** AStar(int fromKey, int toKey){
 	add(&openlist,toKey,1);
 
 	int loop=0;
-	//while(get(toKey,3)==0){
-	while(loop!=5){
+	while(get(toKey,3)==0){
+	//while(loop!=5){
 		//printf("%d\n", eh_vazia(&openlist));
 		if(eh_vazia(&openlist)==0)//nao eh vazia
 		{
