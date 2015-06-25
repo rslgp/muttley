@@ -50,7 +50,7 @@ void imprimir(no **head) {
 	if(*head) {
 		no* temp;
 		for(temp = *head; temp; temp = temp->next)
-			printf("%d \n", temp->key);
+			printf("%03d \n", temp->key);
 		printf("\n");
 	} else printf("VAZIA\n\n");
 }

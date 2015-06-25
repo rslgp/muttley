@@ -9,23 +9,35 @@ typedef struct Custo {
 	int key;//x*100+y
 	int onOpenList,onClosedList;
 
+	int acumulado;
+
 }Custo;
 
-	const int maxX=11, maxY=13; 
+	const int maxX=11, maxY=13, barreira=0; 
 	Custo mapa[11][13];	
+	int mapaPeso[11][13]={
+				{1,1,1,1,1,1,1,1,1,1,1,1,1},
+				{1,0,1,0,1,0,1,0,1,0,1,0,1},
+				{1,1,1,1,1,1,1,1,1,1,1,1,1},
+				{1,0,1,0,1,0,1,0,1,0,1,0,1},
+				{1,1,1,1,1,1,1,1,1,1,1,1,1},
+				{1,0,1,0,1,0,1,0,1,0,1,0,1},
+				{1,1,1,1,1,1,1,1,1,1,1,1,1},
+				{1,0,1,0,1,0,1,0,1,0,1,0,1},
+				{1,1,1,1,1,1,1,0,1,1,1,1,1},
+				{1,0,1,0,1,0,1,0,1,0,0,0,0},
+				{1,1,1,1,1,1,1,0,1,1,1,1,1}
+		};	
 	int token =100;
 
 //atualiza um valor dos atributos da coordenada
-void atualizar(int key, int opcao, int value){
+void atualizar(int key, int opcao){
 	switch(opcao){
-		case 1:		
-			mapa[(key/token)][(key%token)].cost=value;
+		case 1:
+			mapa[(key/token)][(key%token)].onOpenList= !mapa[(key/token)][(key%token)].onOpenList;
 		break;
 		case 2:
-			mapa[(key/token)][(key%token)].onOpenList=value;
-		break;
-		case 3:
-			mapa[(key/token)][(key%token)].onClosedList=value;
+			mapa[(key/token)][(key%token)].onClosedList= !mapa[(key/token)][(key%token)].onOpenList;
 		break;
 
 	}
@@ -84,12 +96,22 @@ int verifyPontos(int a, int b){
 	return abs((float) sqrt(pow(startX - endX, 2) + pow(startY - endY, 2)))==1;
 }
 
-void add(no **lista, int key, int opcao, int value){
+void add(no **lista, int key, int opcao){
 	inserir(lista,key);
-	atualizar(key,opcao,value);
+	atualizar(key,opcao);
 }
 
+int getNoCost(int key){
+	return mapa[key/token][key%token].cost;
+}
 
+int getNoAcumulado(int key){
+	return mapa[key/token][key%token].acumulado;
+}
+
+void setNoAcumulado(int key, int value){
+	mapa[key/token][key%token].acumulado=value;
+}
 no *openlist=NULL,*closedlist=NULL, *listaCaminho=NULL;	
 int** AStar(int fromKey, int toKey){
 	int PathFound= 1;
@@ -99,13 +121,14 @@ int** AStar(int fromKey, int toKey){
 	//inserir(&openlist,fromKey);
 	//atualizar(fromKey,2,1); //Start.onOpenList = true;
 	printf("%d\n", eh_vazia(&openlist));
-	add(&openlist,fromKey,2,1);
+	add(&openlist,fromKey,1);
 	printf("%d\n", eh_vazia(&openlist));
 
-	add(&openlist,toKey,2,1);
+	add(&openlist,toKey,1);
 
-
-	//while(!(get(toKey,3)==1)){
+	int loop=0;
+	//while(get(toKey,3)==0){
+	while(loop!=5){
 		//printf("%d\n", eh_vazia(&openlist));
 		if(eh_vazia(&openlist)==0)//nao eh vazia
 		{
@@ -118,28 +141,65 @@ int** AStar(int fromKey, int toKey){
 			}else if(verifyPontos(listaCaminho->key, current.key))
 				inserir(&listaCaminho,current.key);
 
-			add(&closedlist,current.key,3,1);
+			add(&closedlist,current.key,2);
 			//printf("%d\n", current.key);
 			getVizinhosDoPonto(current.key);
 
+			int i;
+			for(i=0;i<=4;i++)
+			{
+				if(vizinhos[i].cost > barreira && !vizinhos[i].onClosedList)
+				{
+					if(!vizinhos[i].onOpenList){
+						vizinhos[i].acumulado= vizinhos[i].cost + getNoCost(current.key); //acumulado
+						add(&openlist,vizinhos[i].key,1);
+					}
+					else
+					{
+						if(getNoAcumulado(current.key) > vizinhos[i].acumulado + getNoCost(current.key)){
+							setNoAcumulado(current.key,getNoCost(current.key) + vizinhos[i].cost);
+							add(&openlist,current.key,1);
+						}
+
+
+					}
+				}
+			}
+
 		}
+		else
+		{
+			PathFound= 0;
+			break;
+		}
+
+		loop++;
+	}
+	printf("%s\n", "-------------- aberta");
+	imprimir(&openlist);
+	printf("%s\n", "-------------- fechada");
+	imprimir(&closedlist);
 }
 
 	//}
 
 	//printf("%d\n", get(fromKey,2));
 
-
 //configura as chaves de cada coordenada
-int setKey(int i,int j){
+void setKey(int i,int j){
 	mapa[i][j].key = i*100+j;
 }
+void setCost(int i, int j, int cost){
+	mapa[i][j].cost = cost;
 
-void setAllKey(){
+} 
+
+void setAllKeyPeso(){
 	int i,j;
 	for(i=0;i<=maxX;i++){
 		for(j=0;j<=maxY;j++){
 			setKey(i,j);
+			setCost(i,j, mapaPeso[i][j]);
 		}
 	}
 }
@@ -156,7 +216,6 @@ int main(){
 	//Custo mapa[11][13];
 
 	//setKey(i,j);
-
 	//getVizinhosDoPonto(mapa[i][j].key);
 	//getVizinhosDoPonto(mapa[5][10].key);
 
@@ -166,8 +225,10 @@ int main(){
 	printf("%d\n", mapa[i][j].key);
 */
 	//AStar(mapa,mapa[i][j].key,mapa[i][j].key+1);		
-	setAllKey();
+	setAllKeyPeso();
 
 	int i=1,j=3;
-	AStar(mapa[i][j].key,mapa[i][j].key+1);
+	printf("%s%d\n", "saindo daqui ",mapa[i][j].key);
+	printf("%s%d\n", "quero chegar aqui ",mapa[i][j].key+2);
+	AStar(mapa[i][j].key,mapa[i][j].key+2);
 }
