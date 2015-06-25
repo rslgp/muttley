@@ -14,27 +14,69 @@ typedef struct Custo {
 	Custo mapa[11][13];	
 	int token =100;
 
+void atualizar(int key, int opcao, int value){
+	switch(opcao){
+		case 1:		
+			mapa[(key/token)][(key%token)].cost=value;
+		break;
+		case 2:
+			mapa[(key/token)][(key%token)].onOpenList=value;
+		break;
+		case 3:
+			mapa[(key/token)][(key%token)].onClosedList=value;
+		break;
+
+	}
+
+}
+int get(int key, int opcao){
+	switch(opcao){
+		case 1:		
+			return mapa[(key/token)][(key%token)].cost;
+		break;
+		case 2:
+			return mapa[(key/token)][(key%token)].onOpenList;
+		break;
+		case 3:
+			return mapa[(key/token)][(key%token)].onClosedList;
+		break;
+
+	}
+
+}
+
 int** AStar(int fromKey, int toKey){
 	int PathFound= 1;
 
-	no *openlist=NULL,*closedlist=NULL;	
-
+	no *openlist=NULL,*closedlist=NULL, *listaCaminho=NULL;	
 	int comecouLista=0;
 
 	inserir(&openlist,fromKey);
-	mapa[(fromKey/token)][(fromKey%token)].onOpenList=1;
+	atualizar(fromKey,2,1);
 
-	printf("%d\n", mapa[(fromKey/token)][(fromKey%token)].onOpenList);
+	//while(!(get(toKey,3)==1)){
+		printf("%d\n", eh_vazia(&openlist));
+		if(eh_vazia(&openlist)==0)//nao eh vazia
+		{
+			no current = remover(&openlist);
+			//printf("%d\n", current.key);
+			//printf("%d\n", eh_vazia(&openlist));
+
+		}
+
+	//}
+
+	printf("%d\n", get(fromKey,2));
 
 
 
 
 }
-
 
 int setKey(int x,int y){
 	return x*100+y;
 }
+
 Custo* getCoord(int key){
 	//a[0]=key/token;
 	//a[1]=key%token;

@@ -30,6 +30,17 @@ void pop(no **head) { // pop (erase)
     *head = temp;
   }
 }
+
+no remover(no **head){ 
+ if((*head)) {
+  no *retorno = (no*) malloc(sizeof(no));
+  retorno->key = (*head)->key;
+  retorno->next = (*head)->next;
+    pop(head);
+    return *retorno;
+  }
+
+}
  
 int eh_vazia(no **head) { // empty, is_empty
   return *head == NULL;
