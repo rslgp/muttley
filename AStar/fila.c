@@ -19,8 +19,14 @@ void inserir(no **head, int key) // push
   else {
     aux->next = novo;
     aux = aux->next;
+    //(*head)->next = aux;
   }
 
+}
+
+int getLastKey(no **head){
+	if((*head)!=NULL)
+		return (*head)->key;
 }
  
 void pop(no **head) { // pop (erase)
@@ -50,7 +56,7 @@ void imprimir(no **head) {
 	if(*head) {
 		no* temp;
 		for(temp = *head; temp; temp = temp->next)
-			printf("%03d \n", temp->key);
+			printf("%04d \n", temp->key);
 		printf("\n");
 	} else printf("VAZIA\n\n");
 }

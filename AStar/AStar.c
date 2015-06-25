@@ -19,6 +19,7 @@ typedef struct Custo {
 
 }Custo;
 
+	Custo vizinhos[4];
 	//const int maxX=11, maxY=13, barreira=0; 
 	Custo mapa[maxX][maxY];	
 	int mapaPeso[maxX][maxY]={
@@ -116,11 +117,11 @@ void setPonto(Custo *ponto, int x, int y){
 	ponto->key= 100*x+y;
 }
 
-Custo vizinhos[4];
 
 //pega os vizinhos de uma chave
 void getVizinhosDoPonto(int key){
 	int x=(key/token),y=(key%token);
+	//printf("%d\n%d\n", y, key);
 
 	setPonto(&vizinhos[0],x-1,y);//up
 	setPonto(&vizinhos[1],x+1,y);//down
@@ -158,16 +159,62 @@ void setNoAcumulado(int key, int value){
 }
 
 int ES(int a, int b){
+	int custo = getNoCost(b);
+	if(custo==0)
+			return 99;
+
 	int startX= a/100, endX= b/100, startY=a%100, endY=b%100;
-	return (float) sqrt(pow(startX - endX, 2) + pow(startY - endY, 2));
+	//int retorno = (float) sqrt(pow(startX - endX, 2) + pow(startY - endY, 2));
+	int retorno = abs(startX - endX) + abs(startY - endY);
+	return retorno;
 }
 
 int verifyPontos(int a, int b){ //euclides quadratico, distancia de dois pontos
 	return abs(ES(a,b))==1;
 }
 
+int getHotPath(int toKey){
+	int i,retorno=0,calc=0, old=99;
+	for (i = 0; i < 4; ++i)
+	{
+		calc=ES(toKey,vizinhos[i].key);
+		if(calc<old) {
+			old=calc;
+			retorno=vizinhos[i].key;
+		}
+	}
+	//printf("RETORNO %04d\n", retorno);
+	return retorno;
+}
 no *openlist=NULL,*closedlist=NULL, *listaCaminho=NULL;	//tudo fifo queue
 int** AStar(int fromKey, int toKey){
+
+	int ponto= fromKey, index=0, tamanho=ES(toKey,fromKey);
+	int arrayCaminhos[tamanho];
+	while(ponto!=toKey){
+		//printf("PONTO: %04d\n", ponto);
+		arrayCaminhos[index++]=ponto;
+		getVizinhosDoPonto(ponto);
+		/*
+		int v;
+		for (v = 0; v < 4; ++v)
+		{
+			printf("%04d\n", vizinhos[v].key);
+		}
+		*/
+
+		ponto= getHotPath(toKey);
+	}
+		//printf("PONTO: %04d\n", ponto);
+		printf("%d\n", tamanho);
+		arrayCaminhos[index++]=ponto;
+		int c;
+		for(c=0;c<=tamanho;c++){
+		printf("PONTO: %04d\n", arrayCaminhos[c]);
+		}
+
+
+	/*
 	int PathFound= 1;
 
 	int comecouLista=0;
@@ -231,6 +278,7 @@ int** AStar(int fromKey, int toKey){
 	printf("%s\n", "-------------- listaCaminho");
 	imprimir(&listaCaminho);
 
+		*/
 /*
 	int tamanho = getTamanho(closedlist,toKey);
 	int a[tamanho];
@@ -292,11 +340,20 @@ int main(){
 	//AStar(mapa,mapa[i][j].key,mapa[i][j].key+1);		
 	setAllKeyPeso();
 
-	int i=2,j=3, x=0,y=4;
+	int i=2,j=3, x=0,y=5;
 	printf("%s%d\n", "saindo daqui ",mapa[i][j].key);
 	printf("%s%d\n", "quero chegar aqui ",mapa[x][y].key);
 	AStar(mapa[i][j].key,mapa[x][y].key);
 
-	printf("distancia entre pontos %d\n", verifyPontos(0203,0004));
+	//printf("distancia entre pontos %d\n", ES(0203,0202));
+	/*
+	getVizinhosDoPonto(203);
+	int kk;
+	for (kk = 0; kk < 4; ++kk)
+	{
+	printf("%04d distancia entre pontos %d\n", vizinhos[kk].key, ES(004,vizinhos[kk].key));
+
+	}*/
+
 
 }
