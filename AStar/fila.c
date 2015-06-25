@@ -45,6 +45,15 @@ no remover(no **head){
 int eh_vazia(no **head) { // empty, is_empty
   return *head == NULL;
 }
+
+void imprimir(no **head) {
+	if(*head) {
+		no* temp;
+		for(temp = *head; temp; temp = temp->next)
+			printf("%d \n", temp->key);
+		printf("\n");
+	} else printf("VAZIA\n\n");
+}
  
 /* 
 int main() {
