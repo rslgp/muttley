@@ -118,16 +118,19 @@ void setPonto(Custo *ponto, int x, int y){
 	ponto->key= 100*x+y;
 }
 
+void breakVizinho(int i){
+	setPonto(&vizinhos[0],11,13);
+}
 
 //pega os vizinhos de uma chave
 void getVizinhosDoPonto(int key){
 	int x=(key/token),y=(key%token);
 	//printf("%d\n%d\n", y, key);
-
-	if(x>0) setPonto(&vizinhos[0],x-1,y);//up
-	if(x<9) setPonto(&vizinhos[1],x+1,y);//down
-	if(y>0) setPonto(&vizinhos[2],x,y-1);//left
-	if(y<11) setPonto(&vizinhos[3],x,y+1);//right
+	int dentroLimites = ((x>0 || x<9) && (y>0||y<11));
+	dentroLimites  ? setPonto(&vizinhos[0],x-1,y) : breakVizinho(0);//up
+	dentroLimites  ? setPonto(&vizinhos[1],x+1,y) : breakVizinho(1);//down
+	dentroLimites  ? setPonto(&vizinhos[2],x,y-1) : breakVizinho(2);//left
+	dentroLimites  ? setPonto(&vizinhos[3],x,y+1) : breakVizinho(3);//right
 	/*
 	vizinhos[0]= mapa[x-1][y]; //x - 1 >= 0
 	vizinhos[1]= mapa[x+1][y]; //(x + 1 < mWidth)
@@ -192,13 +195,13 @@ void configPular(int i){
 }
 int getHotPath(int toKey){
 	int i,retorno=0,calc=0, old=99, pularFix=pular;
-	//printf("%s\n", "-------");
+	printf("%s\n", "-------");
 	for (i = 0; i < 4; ++i)
 	{
-		if(i!=pularFix){
+		if(vizinhos[i].key < 1113 && i!=pularFix){
 			calc=ES(toKey,vizinhos[i].key);
 			if(calc<old) {
-				//printf("%dponto%d\n", calc,vizinhos[i].key);
+				printf("%dponto%d\n", calc,vizinhos[i].key);
 				old=calc;
 				retorno=vizinhos[i].key;
 				configPular(i);
@@ -366,7 +369,7 @@ int main(){
 	//AStar(mapa,mapa[i][j].key,mapa[i][j].key+1);		
 	setAllKeyPeso();
 
-	int i=10,j=12, x=6,y=11;
+	int i=10,j=12, x=0,y=0;
 	printf("%s%d\n", "saindo daqui ",mapa[i][j].key);
 	printf("%s%d\n", "quero chegar aqui ",mapa[x][y].key);
 	AStar(mapa[i][j].key,mapa[x][y].key);
